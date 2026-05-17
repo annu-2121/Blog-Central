@@ -6,10 +6,11 @@ import { useQueryClient } from "@tanstack/react-query";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Send, Feather } from "lucide-react";
 import { Link } from "wouter";
+import { RichTextEditor } from "@/components/editor/RichTextEditor";
+import "@/components/editor/editor.css";
 
 export default function Write() {
   const { isAuthenticated, isLoading, login } = useAuth();
@@ -19,7 +20,7 @@ export default function Write() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const wordCount = content.split(/\s+/).filter(Boolean).length;
+  const isEmpty = !content || content === "<p></p>" || content.trim() === "";
 
   const createPost = useCreatePost({
     mutation: {
@@ -36,8 +37,8 @@ export default function Write() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim()) return;
-    createPost.mutate({ data: { title: title.trim(), content: content.trim() } });
+    if (!title.trim() || isEmpty) return;
+    createPost.mutate({ data: { title: title.trim(), content } });
   };
 
   if (isLoading) return null;
@@ -78,48 +79,46 @@ export default function Write() {
           </div>
         </div>
 
-        <div className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden">
-          <div className="px-2 py-3 bg-muted/30 border-b border-border/40 flex items-center gap-3">
-            <div className="flex gap-1.5 ml-2">
-              <div className="w-3 h-3 rounded-full bg-red-400/70" />
-              <div className="w-3 h-3 rounded-full bg-amber-400/70" />
-              <div className="w-3 h-3 rounded-full bg-green-400/70" />
-            </div>
-            <span className="text-xs text-muted-foreground font-medium">
-              {title ? `"${title.slice(0, 40)}${title.length > 40 ? '…' : ''}"` : 'Untitled story'}
-            </span>
-          </div>
-
-          <form onSubmit={handleSubmit} className="p-8" data-testid="form-write">
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Your story title..."
-              className="border-0 border-b border-border/40 text-3xl font-serif font-bold h-auto py-5 px-0 focus-visible:ring-0 focus-visible:border-primary/50 bg-transparent placeholder:text-muted-foreground/30 mb-6 rounded-none"
-              data-testid="input-title"
-            />
-
-            <Textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Tell your story here. Write something the world needs to read..."
-              className="border-0 resize-none min-h-[420px] text-base leading-[1.9] focus-visible:ring-0 bg-transparent px-0 placeholder:text-muted-foreground/30 rounded-none"
-              data-testid="input-content"
-            />
-
-            <div className="flex items-center justify-between pt-6 border-t border-border/40">
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                {wordCount > 0 && (
-                  <>
-                    <span className="font-medium">{wordCount} words</span>
-                    <span>·</span>
-                    <span>~{Math.max(1, Math.round(wordCount / 200))} min read</span>
-                  </>
-                )}
+        <form onSubmit={handleSubmit} data-testid="form-write">
+          <div className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden">
+            {/* Window chrome */}
+            <div className="px-4 py-3 bg-muted/30 border-b border-border/40 flex items-center gap-3">
+              <div className="flex gap-1.5 ml-1">
+                <div className="w-3 h-3 rounded-full bg-red-400/70" />
+                <div className="w-3 h-3 rounded-full bg-amber-400/70" />
+                <div className="w-3 h-3 rounded-full bg-green-400/70" />
               </div>
+              <span className="text-xs text-muted-foreground font-medium flex-1 text-center">
+                {title ? `"${title.slice(0, 50)}${title.length > 50 ? "…" : ""}"` : "Untitled story"}
+              </span>
+            </div>
+
+            {/* Title input */}
+            <div className="px-8 pt-8 pb-2 border-b border-border/30">
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Your story title..."
+                className="border-0 text-3xl font-serif font-bold h-auto py-2 px-0 focus-visible:ring-0 bg-transparent placeholder:text-muted-foreground/30 rounded-none"
+                data-testid="input-title"
+              />
+            </div>
+
+            {/* Rich text editor */}
+            <RichTextEditor
+              content={content}
+              onChange={setContent}
+              placeholder="Tell your story here. Write something the world needs to read..."
+            />
+
+            {/* Footer */}
+            <div className="flex items-center justify-between px-8 py-4 border-t border-border/40 bg-muted/10">
+              <p className="text-xs text-muted-foreground">
+                Use the toolbar above to format headings, bold, quotes, lists and more.
+              </p>
               <Button
                 type="submit"
-                disabled={createPost.isPending || !title.trim() || !content.trim()}
+                disabled={createPost.isPending || !title.trim() || isEmpty}
                 className="rounded-full font-serif px-8 gap-2 shadow-sm"
                 data-testid="btn-publish"
               >
@@ -127,8 +126,8 @@ export default function Write() {
                 {createPost.isPending ? "Publishing..." : "Publish story"}
               </Button>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
 
         <p className="text-center text-xs text-muted-foreground mt-4">
           Your story will be published publicly and visible to all readers.

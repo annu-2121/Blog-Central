@@ -13,6 +13,7 @@ import { MessageSquare, Trash2, ArrowLeft, Clock, Send } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import "@/components/editor/editor.css";
 
 export default function PostDetail() {
   const [, params] = useRoute("/posts/:id");
@@ -73,7 +74,7 @@ export default function PostDetail() {
             <Skeleton className="h-4 w-48 rounded-lg" />
           </div>
           <div className="space-y-3 pt-6">
-            {[1,2,3,4,5].map(i => <Skeleton key={i} className="h-4 w-full rounded-lg" />)}
+            {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-4 w-full rounded-lg" />)}
           </div>
         </div>
       </PageLayout>
@@ -98,6 +99,8 @@ export default function PostDetail() {
       </PageLayout>
     );
   }
+
+  const isHtml = post.content.trimStart().startsWith("<");
 
   return (
     <PageLayout>
@@ -140,20 +143,26 @@ export default function PostDetail() {
           </div>
         </header>
 
-        {/* Post content */}
-        <div
-          className="prose prose-lg max-w-none mb-16
-            prose-headings:font-serif prose-headings:text-foreground
-            prose-p:text-foreground/90 prose-p:leading-[1.85]
-            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-            prose-blockquote:border-primary/40 prose-blockquote:bg-primary/5 prose-blockquote:rounded-r-lg prose-blockquote:py-1
-            prose-strong:text-foreground
-            font-sans text-[1.05rem] leading-[1.85]"
-          data-testid="text-post-content"
-          style={{ whiteSpace: "pre-wrap" }}
-        >
-          {post.content}
-        </div>
+        {/* Post content — render as HTML if from rich editor, plain text otherwise */}
+        {isHtml ? (
+          <div
+            className="mb-16 tiptap font-sans text-[1.05rem] leading-[1.9]"
+            data-testid="text-post-content"
+            dangerouslySetInnerHTML={{ __html: post.content }}
+          />
+        ) : (
+          <div
+            className="prose prose-lg max-w-none mb-16
+              prose-headings:font-serif prose-headings:text-foreground
+              prose-p:text-foreground/90 prose-p:leading-[1.85]
+              prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+              font-sans text-[1.05rem] leading-[1.85]"
+            data-testid="text-post-content"
+            style={{ whiteSpace: "pre-wrap" }}
+          >
+            {post.content}
+          </div>
+        )}
 
         {/* Author card at bottom */}
         <div className="bg-card border border-border/60 rounded-2xl p-6 mb-12 flex items-center gap-4">
@@ -231,7 +240,6 @@ export default function PostDetail() {
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-4 w-32 rounded-lg" />
                     <Skeleton className="h-4 w-full rounded-lg" />
-                    <Skeleton className="h-4 w-3/4 rounded-lg" />
                   </div>
                 </div>
               ))}

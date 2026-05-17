@@ -1,45 +1,71 @@
-# [Project name]
+# Pencraft
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A full-stack blogging platform where thoughtful writers share ideas and readers engage through comments.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080, served at `/api`)
+- `pnpm --filter @workspace/blog-platform run dev` — run the frontend (served at `/`)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `DATABASE_URL` — Postgres connection string, `SESSION_SECRET` — session signing secret
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
+- Frontend: React + Vite, Tailwind CSS v4, Wouter (routing), TanStack Query
 - API: Express 5
+- Auth: Replit Auth (OpenID Connect / PKCE)
 - DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
+- Validation: Zod, drizzle-zod
 - API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Build: esbuild (ESM bundle)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `lib/db/src/schema/` — database schema (`auth.ts`, `posts.ts`, `comments.ts`)
+- `lib/api-spec/openapi.yaml` — OpenAPI source of truth
+- `lib/api-zod/` — generated Zod schemas (from codegen)
+- `lib/api-hooks/` — generated TanStack Query hooks (from codegen)
+- `lib/replit-auth-web/` — shared auth hook for the frontend (`useAuth`)
+- `artifacts/api-server/src/routes/` — Express route handlers
+- `artifacts/blog-platform/src/pages/` — React page components
+- `artifacts/blog-platform/src/index.css` — design tokens (Cream/Ink/Sienna palette)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Contract-first API: OpenAPI spec drives all Zod validation and React Query hooks via codegen.
+- Replit Auth handles all identity — no passwords stored; users table populated on first login.
+- Sessions use express-session with a signed cookie; `SESSION_SECRET` must be set.
+- Posts have published/draft status; only published posts appear on the home feed.
+- Comments are always public on published posts; authors can delete their own comments.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Home** (`/`) — editorial hero with live stats (stories, comments, writers), feed of published posts
+- **Post detail** (`/posts/:id`) — full post with comments and comment form (login required to comment)
+- **Write** (`/write`) — create or edit posts with title, excerpt, content, tags, and publish toggle
+- **My Posts** (`/my-posts`) — dashboard showing author's own drafts and published posts with edit/delete
+
+## Design
+
+- Typography: Playfair Display (serif, headings) + Inter (sans, body)
+- Palette: Cream `#FAF9F6` · Ink `#171A21` · Burnt Sienna primary
+- Sharp edges (`--radius: 0rem`) for an editorial/print feel
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+_None recorded yet._
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Always run codegen after editing `lib/api-spec/openapi.yaml`.
+- API server imports `zod` directly (not `zod/v4`) due to esbuild resolution.
+- The `build` command requires `PORT` and `BASE_PATH` env vars (injected by workflows); use `typecheck` for local verification instead.
 
 ## Pointers
 
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+- See the `replit-auth` skill for auth flow details.

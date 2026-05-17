@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Blog Platform"
+version = "1.0.0"
+id = "artifacts/blog-platform"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21115
+
+[services.development]
+run = "pnpm --filter @workspace/blog-platform run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/blog-platform", "run", "build" ]
+publicDir = "artifacts/blog-platform/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21115"
+BASE_PATH = "/"

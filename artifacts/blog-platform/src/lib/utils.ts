@@ -14,6 +14,11 @@ export function formatDate(dateStr: string): string {
   });
 }
 
+export function readingTime(text: string): number {
+  const words = text.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+}
+
 export function formatRelativeDate(dateStr: string): string {
   const date = new Date(dateStr);
   const now = new Date();

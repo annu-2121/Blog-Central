@@ -49,72 +49,77 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* LIGHT MODE - Cream / Ink / Burnt Sienna */
+/* LIGHT MODE */
 :root {
-  --background: 45 30% 97%; /* #FAF9F6 Cream */
-  --foreground: 220 15% 10%; /* #171A21 Ink */
-  --border: 45 10% 85%;
-  --card: 45 30% 98%; 
-  --card-foreground: 220 15% 10%;
-  --card-border: 45 10% 85%;
+  --background: 40 30% 96%;
+  --foreground: 220 20% 12%;
+  --border: 38 18% 82%;
+  --card: 40 35% 98%;
+  --card-foreground: 220 20% 12%;
+  --card-border: 38 18% 85%;
 
-  --popover: 45 30% 98%;
-  --popover-foreground: 220 15% 10%;
-  --popover-border: 45 10% 85%;
+  --popover: 40 35% 98%;
+  --popover-foreground: 220 20% 12%;
+  --popover-border: 38 18% 85%;
 
-  --primary: 15 60% 45%; /* Burnt Sienna */
-  --primary-foreground: 45 30% 97%;
-  
-  --secondary: 45 15% 90%;
-  --secondary-foreground: 220 15% 10%;
+  --primary: 15 65% 44%;
+  --primary-foreground: 40 30% 96%;
 
-  --muted: 45 15% 90%;
-  --muted-foreground: 220 5% 40%;
+  --secondary: 38 20% 88%;
+  --secondary-foreground: 220 20% 12%;
 
-  --accent: 45 20% 90%;
-  --accent-foreground: 220 15% 10%;
+  --muted: 38 15% 90%;
+  --muted-foreground: 220 8% 42%;
 
-  --destructive: 0 70% 50%;
+  --accent: 38 25% 88%;
+  --accent-foreground: 220 20% 12%;
+
+  --destructive: 0 72% 50%;
   --destructive-foreground: 0 0% 100%;
 
-  --input: 45 10% 80%;
-  --ring: 15 60% 45%;
+  --input: 38 15% 78%;
+  --ring: 15 65% 44%;
 
   --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: 'Playfair Display', serif;
   --app-font-mono: Menlo, monospace;
-  --radius: 0rem; /* Sharp edges for editorial look */
+  --radius: 0.375rem;
+
+  --sienna: 15 65% 44%;
+  --sienna-light: 20 80% 88%;
+  --sage: 145 20% 50%;
+  --gold: 42 70% 52%;
 }
 
 .dark {
-  --background: 220 15% 10%; /* Ink */
-  --foreground: 45 30% 97%; /* Cream */
-  --border: 220 10% 20%;
-  --card: 220 15% 12%; 
-  --card-foreground: 45 30% 97%;
-  --card-border: 220 10% 20%;
+  --background: 220 18% 9%;
+  --foreground: 40 25% 93%;
+  --border: 220 12% 20%;
+  --card: 220 18% 11%;
+  --card-foreground: 40 25% 93%;
+  --card-border: 220 12% 20%;
 
-  --popover: 220 15% 12%;
-  --popover-foreground: 45 30% 97%;
-  --popover-border: 220 10% 20%;
+  --popover: 220 18% 11%;
+  --popover-foreground: 40 25% 93%;
+  --popover-border: 220 12% 20%;
 
-  --primary: 15 60% 55%; /* Lighter Sienna */
-  --primary-foreground: 220 15% 10%;
-  
-  --secondary: 220 10% 20%;
-  --secondary-foreground: 45 30% 97%;
+  --primary: 15 65% 58%;
+  --primary-foreground: 220 18% 9%;
 
-  --muted: 220 10% 20%;
-  --muted-foreground: 45 10% 70%;
+  --secondary: 220 12% 18%;
+  --secondary-foreground: 40 25% 93%;
 
-  --accent: 220 10% 20%;
-  --accent-foreground: 45 30% 97%;
+  --muted: 220 12% 18%;
+  --muted-foreground: 40 10% 62%;
+
+  --accent: 220 12% 18%;
+  --accent-foreground: 40 25% 93%;
 
   --destructive: 0 70% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --input: 220 10% 30%;
-  --ring: 15 60% 55%;
+  --input: 220 12% 25%;
+  --ring: 15 65% 58%;
 }
 
 @layer base {
@@ -124,8 +129,39 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
-  
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(15, 65%, 44%) 0%, hsl(30, 80%, 58%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-pattern {
+    background-image:
+      radial-gradient(circle at 20% 50%, hsl(15 65% 44% / 0.07) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, hsl(42 70% 52% / 0.06) 0%, transparent 40%),
+      radial-gradient(circle at 60% 80%, hsl(15 65% 44% / 0.04) 0%, transparent 40%);
+  }
+  .card-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+  .card-hover:hover {
+    @apply -translate-y-0.5 shadow-md;
+  }
+  .reading-time {
+    @apply text-xs font-medium tracking-wide uppercase;
+  }
+  .ornament {
+    display: inline-block;
+    color: hsl(var(--primary));
+    font-size: 1.5rem;
+    line-height: 1;
+    margin: 0 0.5rem;
+    opacity: 0.4;
   }
 }

@@ -7,7 +7,7 @@ A simple yet powerful blogging platform where users can share posts and engage t
 ### 🏠 Home Page
 ![Home Page](Screenshothomepage.png)
 
-![](Screenshot(91).png)
+![](Screenshot(91).png).
 
 ![](Screenshot(92).png)
 
